@@ -11,13 +11,22 @@
         <nav>
             <ul>
                 <li><a href="{{ url_for('home') }}">Home</a></li>
-                <li><a href="{{ url_for('library') }}">Library</a></li>
-
                 <li><a href="{{ url_for('register') }}">Register</a></li>
                 <li><a href="{{ url_for('heroes') }}">Heroes</a></li>
             </ul>
         </nav>
     </header>
-    {% block content %}{% endblock %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul>
+            {% for category, message in messages %}
+                <li class="flash-{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
+{% block content %}{% endblock %}
+
 </body>
 </html>
