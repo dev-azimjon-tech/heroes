@@ -99,7 +99,7 @@ h1 {
 }
 
 .a_card_img img {
-    max-width: 100%;
+    max-width: 800px;
     height: auto;
 }
 
@@ -123,3 +123,8 @@ h1 {
     overflow-y: auto; /* In case content overflows */
 }
 
+.a_card:hover,.b_card:hover{
+    background-color: aqua;
+    transition: 0.6s;
+    box-shadow: turquoise;
+}
