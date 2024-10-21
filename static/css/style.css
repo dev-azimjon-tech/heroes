@@ -136,3 +136,91 @@ header {
     background-color: #d9edf7;
     border-color: #bce8f1;
 }
+
+/* Grid container for cards */
+/* Grid container for cards */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 cards per row */
+    gap: 20px; /* Space between cards */
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+/* Styling for each card */
+.card {
+    background-color: rgba(0, 0, 255, 0.712); /* Blue background color with transparency */
+    color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: center;
+    transition: transform 0.3s ease;
+    position: relative;
+    height: 350px;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+/* Card image styling */
+.card img {
+    width: 100%;
+    height: 180px; /* Adjust image height */
+    object-fit: cover;
+}
+
+/* Card content */
+.card-content {
+    padding: 15px;
+}
+
+.card-content h2 {
+    font-size: 20px;
+}
+
+.card-content p {
+    font-size: 16px;
+}
+
+/* Hide button initially */
+.hero-btn {
+    display: none;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Button hover effect */
+.hero-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Show button on hover */
+.card:hover .hero-btn {
+    display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 cards per row on medium screens */
+    }
+}
+
+@media (max-width: 600px) {
+    .cards-grid {
+        grid-template-columns: 1fr; /* 1 card per row on small screens */
+    }
+}
