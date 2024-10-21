@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, flash, session
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm  #type: ignore
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length #type:ignore
 import random
 import string
 from secret import *
