@@ -67,7 +67,7 @@ def login():
         email = form.email.data
         password = form.password.data
 
-        # Authenticate the user
+    
         if email in users and users[email]['password'] == password:
             session['user'] = email
             flash('Login successful!', 'success')
