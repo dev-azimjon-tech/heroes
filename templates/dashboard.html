@@ -5,4 +5,18 @@
     <p>Your email is: {{ user.email }}</p>
     <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
 </div>
+
+<div class="a_card">
+    <h2 style="text-align: center;">About Web-Site:</h2>
+    <p>Insert your website description here...</p>
+</div>
+
+<div class="a_card_img">
+    <img src="{{ url_for('static', filename='images/3d photo.avif') }}" alt="3D photo">
+</div>
+
+<div class="b_card">
+    <h2 style="text-align: center;">Why it's important?</h2>
+    <h4>Short description of importance...</h4>
+</div>
 {% endblock %}
