@@ -1,78 +1,97 @@
-from flask import Flask, render_template
-
-import os
-import secrets
-from flask import Flask, render_template, request, redirect, flash, url_for
-from flask_bcrypt import Bcrypt
+from flask import Flask, render_template, redirect, url_for, flash, session
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
-from wtforms.validators import DataRequired, Email, Length
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired, Length
+import random
+import string
+from secret import *
+
 app = Flask(__name__)
+app.secret_key = secret_key # Replace with a strong secret key
 
-@app.route('/')
+
+@app.route("/")
 def home():
-    return render_template('home.html')
+    return render_template("home.html")
 
-@app.route('/register')
-def register():
-    return render_template("register.html")
-
-@app.route('/heroes')
+@app.route("/heroes")
 def heroes():
     return render_template("heroes.html")
+# In-memory "database" for demonstration purposes
+users = {}
 
+# Generate a random email
+def generate_random_email(name):
+    domain = "example.com"
+    random_number = ''.join(random.choices(string.digits, k=5))
+    return f"{name.lower()}.{random_number}@{domain}"
 
-
-# Initialize Flask app
-
-
-# Generate or set secret key
-# Option 1: Use os.urandom or secrets.token_hex
-# app.secret_key = secrets.token_hex(32)  # Uncomment for development
-
-# Option 2: Use environment variable (best practice)
-app.secret_key = os.getenv('FLASK_SECRET_KEY', secrets.token_hex(32))
-
-# Initialize Bcrypt for password hashing
-bcrypt = Bcrypt(app)
-
-# In-memory users database (for demonstration purposes only)
-users_db = {}
-
-# Flask-WTF Form Class
+# Registration Form
 class RegistrationForm(FlaskForm):
-    name = StringField('Name', validators=[DataRequired(), Length(min=2, max=30)])
-    email = StringField('Email', validators=[DataRequired(), Email()])
+    first_name = StringField('First Name', validators=[DataRequired()])
+    surname = StringField('Surname', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
+    submit = SubmitField('Register')
 
-def email_exists(email):
-    return email in users_db
+# Login Form
+class LoginForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')
 
-@app.route('/register', methods=['POST', 'GET'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegistrationForm(request.form)
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        first_name = form.first_name.data
+        surname = form.surname.data
+        password = form.password.data
+        email = generate_random_email(first_name)
 
-    if request.method == 'POST' and form.validate_on_submit():
-        name = form.name.data
+        # Store user info in the "database"
+        users[email] = {
+            'first_name': first_name,
+            'surname': surname,
+            'password': password
+        }
+
+        flash(f'Registration successful! Your generated email is {email}', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('register.html', form=form)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
 
-        # Check if the email is already registered
-        if email_exists(email):
-            flash('Email is already registered, please log in or use a different email.', 'danger')
-            return redirect(url_for('register'))
+        # Authenticate the user
+        if email in users and users[email]['password'] == password:
+            session['user'] = email
+            flash('Login successful!', 'success')
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid email or password. Please try again.', 'danger')
 
-        # Hash the password
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+    return render_template('login.html', form=form)
 
-        # Save the user (in-memory for now)
-        users_db[email] = {'name': name, 'password': hashed_password}
+@app.route('/dashboard')
+def dashboard():
+    if 'user' in session:
+        email = session['user']
+        user = users[email]
+        return render_template('dashboard.html', user=user)
+    else:
+        flash('You need to login first!', 'warning')
+        return redirect(url_for('login'))
 
-        # Flash a success message and redirect to the register page (or login page)
-        flash('You have successfully registered!', 'success')
-        return redirect(url_for('register'))  # Change this to a login page URL in a real app
-
-    return render_template('register.html', form=form)
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    flash('You have been logged out!', 'info')
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True)
