@@ -1,22 +1,14 @@
-from flask import Flask, render_template, redirect, url_for, flash, session
-from flask_wtf import FlaskForm  #type: ignore
+from flask import Flask, render_template, redirect, url_for, flash, session, request
+from flask_wtf import FlaskForm  # type: ignore
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Length #type:ignore
+from wtforms.validators import DataRequired, Length  # type: ignore
 import random
 import string
-from secret import *
+from secret import secret_key  # Ensure to add a strong secret key in a separate file for security
 
 app = Flask(__name__)
-app.secret_key = secret_key # Replace with a strong secret key
+app.secret_key = secret_key  # Replace with a strong secret key
 
-
-@app.route("/")
-def home():
-    return render_template("home.html")
-
-@app.route("/heroes")
-def heroes():
-    return render_template("heroes.html")
 # In-memory "database" for demonstration purposes
 users = {}
 
@@ -39,6 +31,10 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
+@app.route("/")
+def home():
+    return render_template("home.html")
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
@@ -46,7 +42,7 @@ def register():
         first_name = form.first_name.data
         surname = form.surname.data
         password = form.password.data
-        email = generate_random_email(first_name)
+        email = generate_random_email(first_name)  # Randomly generated email
 
         # Store user info in the "database"
         users[email] = {
@@ -67,7 +63,6 @@ def login():
         email = form.email.data
         password = form.password.data
 
-    
         if email in users and users[email]['password'] == password:
             session['user'] = email
             flash('Login successful!', 'success')
